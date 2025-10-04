@@ -2,7 +2,7 @@ import * as React from "react";
 import { Box, Typography, Popper, Paper, Divider } from "@mui/material";
 
 // Input: ISO dates recommended (YYYY-MM-DD or full ISO)
-export type Item = { when: string; title: string; note?: string };
+export type Item = { Title: string; Link: string; pmc_id: string; pmid: string; AU: string; DP: string; AB: string; };
 
 type Props = {
   items: Item[];
@@ -48,7 +48,7 @@ export default function HorizontalTimeScaledTimeline({
   const data = React.useMemo(
     () =>
       [...items]
-        .map((i) => ({ ...i, date: parseDateStable(i.when) }))
+        .map((i) => ({ ...i, date: parseDateStable(i.DP) }))
         .sort((a, b) => a.date.getTime() - b.date.getTime()),
     [items]
   );
@@ -125,7 +125,7 @@ export default function HorizontalTimeScaledTimeline({
 
           return (
             <Box
-              key={`${it.title}-${i}`}
+              key={`${it.pmc_id}-${i}`}
               sx={{
                 position: "absolute",
                 left: x,
@@ -167,7 +167,7 @@ export default function HorizontalTimeScaledTimeline({
                   <span suppressHydrationWarning>{fmtDate.format(it.date)}</span>
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {it.title}
+                  {it.pmc_id}
                 </Typography>
               </Box>
             </Box>
@@ -203,16 +203,8 @@ export default function HorizontalTimeScaledTimeline({
                 </span>
               </Typography>
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                {data[hoverIndex].title}
+                {data[hoverIndex].Title}
               </Typography>
-              {data[hoverIndex].note && (
-                <>
-                  <Divider sx={{ my: 0.75 }} />
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    {data[hoverIndex].note}
-                  </Typography>
-                </>
-              )}
             </Paper>
           )}
         </Popper>

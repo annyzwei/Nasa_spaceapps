@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import ThreeScene from "../components/componentJs.jsx"
 import MainView from "../components/mainView";
 import TimeScaledTimeline from "../components/SimpleTimeline";
+import summary from "../components/summary.json";
 
 export default function Home() {
 
@@ -42,7 +43,7 @@ export default function Home() {
       <Button onClick={() => {if (color == "red") setColor("green"); else setColor("red")}} sx={{backgroundColor: "white"}}></Button>
     </div> */}
     <MainView/>
-    <TimeScaledTimeline items={items} />
+    <TimeScaledTimeline items={summary}/>
     <ThreeScene/>
   </>
   );
