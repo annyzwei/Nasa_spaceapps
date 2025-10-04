@@ -6,7 +6,7 @@ CORS(app)  # dev: allow React origin
 
 @app.get("/api/hello")
 def hello():
-    return jsonify(msg="Goodbye from Flask")
+    return jsonify(msg="screw u nancy")
 
 @app.get("/s")
 def hello2():
