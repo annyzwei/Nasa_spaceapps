@@ -5,56 +5,6 @@ import requests
 DATA_CSV = "./../data/SB_publication_PMC.csv"
 OUTPUT_CSV_PATH = "./../data/summary"
 
-# def medline_to_dict(medline_text):
-#     data = {}
-#     current_tag = None  # track current field
-#     for line in medline_text.strip().split("\n"):
-#         if "  - " in line:
-#             tag, value = line.split("  - ", 1)
-#             value = value.strip()  # remove extra spaces / \r
-#             current_tag = tag
-
-#             if tag == "AU":
-#                 data.setdefault("AU", []).append(value)
-#             elif tag == "PT":
-#                 # PT can be multiple entries
-#                 if "PT" in data:
-#                     if isinstance(data["PT"], list):
-#                         data["PT"].append(value)
-#                     else:
-#                         data["PT"] = [data["PT"], value]
-#                 else:
-#                     data["PT"] = [value]
-#             else:
-#                 data[tag] = value
-
-#         elif current_tag in ["AB"]:  # continuation line for abstract
-#             data[current_tag] += " " + line.strip()  # append with space
-
-#     return data
-
-# def get_pmid(pmc_id):
-#     url = "https://pmc.ncbi.nlm.nih.gov/tools/idconv/api/v1/articles/"
-#     params = {
-#         "format": "json",
-#         "ids": pmc_id
-#     }
-#     try:
-#         response = requests.get(url, params=params)
-#         response.raise_for_status()
-#         data = response.json()  # Parse JSON
-#         # API returns a list under 'records'
-#         records = data.get('records', [])
-#         if records and 'pmid' in records[0]:
-#             return records[0]['pmid']
-#         else:
-#             return None
-#     except requests.exceptions.RequestException as e:
-#         print(f"Error fetching {pmc_id}: {e}")
-#         return None
-
-# # Get authors, date, pub type, abstract
-
 
 def fetch_pmc_data(pmc_id):
     # remove "PMC" prefix
