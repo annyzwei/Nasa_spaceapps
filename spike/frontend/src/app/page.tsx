@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 import {Button, Input, TextField, Typography} from "@mui/material";
 import { useEffect, useState } from "react";
 
-import ThreeScene from "./../components/componentJs.jsx"
+import ThreeScene from "../components/componentJs.jsx"
 
 export default function Home() {
 
