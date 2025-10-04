@@ -2,7 +2,7 @@ import pandas as pd
 from xml.etree import ElementTree as ET
 import requests
 
-DATA_CSV = "./../data/SB_publication_PMC.csv"
+DATA_CSV = "./../../backend/data/SB_publication_PMC.csv"
 OUTPUT_CSV_PATH = "./../data/summary"
 
 
