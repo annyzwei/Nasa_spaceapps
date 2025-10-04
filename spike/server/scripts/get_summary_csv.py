@@ -57,7 +57,7 @@ def get_metadata(pmc_id):
     url = "https://pmc.ncbi.nlm.nih.gov/api/ctxp/v1/pmc/"
     params = {
         "format": "medline",
-        "id": pmc_id
+        "id": pmc_id[3:]
     }
     try:
         response = requests.get(url, params=params)
@@ -76,7 +76,7 @@ def get_metadata(pmc_id):
 def main():
     df = pd.read_csv(DATA_CSV)
     df = df.head(10) # get the first 10 entries
-    df['pmc_id'] = df['Link'].str.extract(r'PMC(\d+)/?')
+    df['pmc_id'] = df['Link'].str.extract(r'articles/(PMC\d+)/?')
     df['pm_id'] = df['pmc_id'].apply(get_pmid)
    
     # Get authors, date, pub type, abstract
