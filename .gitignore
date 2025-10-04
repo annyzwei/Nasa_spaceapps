@@ -9,3 +9,6 @@ backend/__pycache__/
 
 # Build/artifacts
 backend/summary.json
+
+/spike/node_modules/*
+/spike/.next/*
