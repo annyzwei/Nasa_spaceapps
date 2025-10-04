@@ -7,7 +7,7 @@ RAW_DIR = "../data/raw"
 TEXT_DIR = "../data/text"
 os.makedirs(TEXT_DIR, exist_ok=True)
 
-# Key sections by title
+# Key sections by title (lowercase for consistency)
 KEYWORDS = ["abstract", "discussion", "conclusion"]  
 
 def extract_text_recursive(element, content):
@@ -16,18 +16,18 @@ def extract_text_recursive(element, content):
     if hasattr(element, "name") and element.name in ["h4", "figure"]:
         return
 
-    # Skip elements with certain classes
+    # Skip elements with classes associated with tables
     if hasattr(element, "has_attr") and element.has_attr("class"):
         if set(element["class"]) & {"tw", "xbox", "font-sm"}:
             return
 
-    # H3 headers → include as Markdown-style ### or just text
+    # include H3 headers as Markdown-style ###
     if hasattr(element, "name") and element.name == "h3":
         h3_title = element.get_text(strip=True)
         content.append(f"### {h3_title}")
 
-    # Paragraphs, list items, table cells
-    elif hasattr(element, "name") and element.name in ["p", "li", "td", "th"]:
+    # Paragraphs, list items
+    elif hasattr(element, "name") and element.name in ["p", "li"]:
         text = element.get_text(strip=True)
         if text:
             content.append(text)
@@ -81,7 +81,8 @@ def main():
 
         sections_dict = clean_text_to_dict(html)
 
-        fname = os.path.splitext(os.path.basename(path))[0] + ".json"
+        # fname = os.path.splitext(os.path.basename(path))[0] + ".json" # save each json with article name
+        fname = "temparticle.json"
         outpath = os.path.join(TEXT_DIR, fname)
 
         # Write the dictionary to a JSON file
