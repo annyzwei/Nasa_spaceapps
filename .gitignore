@@ -1,6 +1,7 @@
 /node_modules/*
 
 backend/venv
+../../.venv/
 backend/.env
 
 # Python bytecode
