@@ -1,6 +1,7 @@
 /node_modules/*
 
 backend/venv
+.venv/
 backend/.env
 
 # Python bytecode
@@ -8,3 +9,6 @@ backend/__pycache__/
 
 # Build/artifacts
 backend/summary.json
+
+/spike/node_modules/*
+/spike/.next/*
