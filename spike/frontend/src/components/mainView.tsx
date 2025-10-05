@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TablePagination,
   Stack, Paper, Link as MUILink,
   createTheme, ThemeProvider, Chip, Typography, Box, Divider, Card, CardContent,
   CircularProgress, Button
@@ -131,6 +131,10 @@ export default function MainView() {
   const [order, setOrder] = React.useState<Order>("asc");
   const [selected, setSelected] = React.useState<Pub | null>(null);
 
+  // pagination
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(20);
+
   const [filters, setFilters] = React.useState<Filters>({
     title: "",
     link: "",
@@ -142,6 +146,20 @@ export default function MainView() {
     includeLogic: "AND",
     excludeTags: []
   });
+  
+  // Filter publications for the left table
+  const filtered = React.useMemo(() => {
+    const list = publications as Pub[];
+    return list.filter((item) => matchesFilters(item, filters));
+  }, [filters]);
+  
+  const rows = React.useMemo(
+    () => stableSort(filtered, getComparator(order, orderBy)),
+    [filtered, order, orderBy]
+  );
+  const paginatedRows = rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+
+  
 
   const [liveSummary, setLiveSummary] = React.useState<SummaryRecord | null>(null);
   const [liveLoading, setLiveLoading] = React.useState(false);
@@ -180,17 +198,6 @@ export default function MainView() {
   }, [summaryIndex]);
 
   const summaryRecord = React.useMemo(() => getSummaryFor(selected), [getSummaryFor, selected]);
-
-  // Filter publications for the left table
-  const filtered = React.useMemo(() => {
-    const list = publications as Pub[];
-    return list.filter((item) => matchesFilters(item, filters));
-  }, [filters]);
-
-  const rows = React.useMemo(
-    () => stableSort(filtered, getComparator(order, orderBy)),
-    [filtered, order, orderBy]
-  );
 
   const applyFilters = (next: Filters) => setFilters(next);
   const clearFilters = () => setFilters({
@@ -353,7 +360,7 @@ export default function MainView() {
                 </TableHead>
 
                 <TableBody>
-                  {rows.map((pub, index) => {
+                  {paginatedRows.map((pub, index) => {
                     const isSelected = selected?.pmid === pub.pmid;
                     return (
                       <TableRow
@@ -378,16 +385,28 @@ export default function MainView() {
                       </TableRow>
                     );
                   })}
-                  {rows.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={5} align="center" sx={{ color: "text.primary" }}>
-                        No matches
-                      </TableCell>
-                    </TableRow>
-                  )}
+                    {paginatedRows.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center">No matches</TableCell>
+                      </TableRow>
+                    )}
                 </TableBody>
               </Table>
             </TableContainer>
+
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 50]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(event, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(parseInt(event.target.value, 10));
+                setPage(0); // reset to first page
+              }}
+              sx={{ color: "text.primary" }}
+            />
           </Paper>
         </Box>}
         </Box>
