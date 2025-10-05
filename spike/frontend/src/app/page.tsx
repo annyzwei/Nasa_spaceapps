@@ -11,6 +11,7 @@ import TimeScaledTimeline from "../components/SimpleTimeline";
 import summary from "../components/summary.json";
 import tree from "../components/subjects_tree.json";
 import SubjectTree from "../components/SubjectTree";
+import TeamTitle from "../components/TeamTitle";
 import SummaryViewer from "../components/SummaryViewer";
 import AI_SUM from "../components/AI_SUM.json";
 
@@ -47,6 +48,7 @@ export default function Home() {
       />
       <Button onClick={() => {if (color == "red") setColor("green"); else setColor("red")}} sx={{backgroundColor: "white"}}></Button>
     </div> */}
+    <TeamTitle teamName="SPIKE" exclamations={3} />
     <MainView/>
     <TimeScaledTimeline items={summary}/>
     <PrettyGlobe/>
