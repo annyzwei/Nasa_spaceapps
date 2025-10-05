@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel,
   Stack, Paper, Link as MUILink,
   createTheme, ThemeProvider, Chip, Typography, Box, Divider, Card, CardContent,
-  CircularProgress
+  CircularProgress, Button
 } from "@mui/material";
 import publications from "./SB_publication_PMC.json";
 import summary from "./summary.json";
 import SearchBar from "./searchBar";
 import SummaryViewer from "./SummaryViewer";
+import TimeScaledTimeline from "./SimpleTimeline";
 
 // ---------------- Theme (dark) ----------------
 const darkTheme = createTheme({
@@ -145,6 +146,7 @@ export default function MainView() {
   const [liveSummary, setLiveSummary] = React.useState<SummaryRecord | null>(null);
   const [liveLoading, setLiveLoading] = React.useState(false);
   const [liveError, setLiveError] = React.useState<string | null>(null);
+  const [view, setView] = useState<"results" | "timeline">("results");
 
   const handleSort = (property: keyof Pub) => () => {
     if (orderBy === property) setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -257,8 +259,26 @@ export default function MainView() {
       </Box>
       <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start", width: "100%", mt: 2, flex: 1, minHeight: 0}}>
         {/* Left: Table */}
+        <Box sx={{ p: 2, flexDirection: "column", display: "flex", width: "60%",}}>
+        {/* Toggle buttons */}
+        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+          <Button
+            variant={view === "results" ? "contained" : "outlined"}
+            onClick={() => setView("results")}
+          >
+            Results
+          </Button>
+          <Button
+            variant={view === "timeline" ? "contained" : "outlined"}
+            onClick={() => setView("timeline")}
+          >
+            Timeline
+          </Button>
+        </Stack>
         
-        <Box sx={{ flex: 7, minWidth: 0, bgcolor: "background.default" }}>
+       
+        {view === "timeline" && <TimeScaledTimeline items={rows}/>}
+        {view == "results" && <Box sx={{ flex: 7, minWidth: 0, bgcolor: "background.default" }}>
           <Paper sx={{ p: 2, bgcolor: ".paper", minWidth: 0 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
               <div style={{ fontWeight: 600 }}>Publications</div>
@@ -369,6 +389,7 @@ export default function MainView() {
               </Table>
             </TableContainer>
           </Paper>
+        </Box>}
         </Box>
 
         {/* Right: Summary panel */}
