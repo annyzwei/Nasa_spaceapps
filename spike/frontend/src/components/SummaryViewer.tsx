@@ -10,6 +10,12 @@ function getLinkFromTitle(title: string): string | null {
   const entry = summaryData.find((item) => item.Title === title);
   return entry?.Link ?? null;
 }
+import summaryData from "./summary.json";
+
+function getLinkFromTitle(title: string): string | null {
+  const entry = summaryData.find((item) => item.Title === title);
+  return entry?.Link ?? null;
+}
 
 export type SummaryData = {
   summary?: string;
@@ -136,16 +142,19 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
   autoScroll = true,
   className = "",
   title,
+  title,
   controls = false,
   speedControl = false,
   footerTip = false,
 }) => {
   const [payload, setPayload] = useState<SummaryData | null>(data ?? null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [playing, setPlaying] = useState<boolean>(true);
   const [speed, setSpeed] = useState<number>(msPerChar);
+  const [link, setLink] = useState<string>("");
   const [link, setLink] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
 
@@ -174,6 +183,29 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
   useEffect(() => {
     if (!title) return;
 
+    let cancelled = false;
+    setLoading(true);   // show loader immediately
+    setError(null);     // reset previous errors
+    setPayload(null);   // clear old data while loading
+
+    fetch(`http://127.0.0.1:5000/get_summary/${title}`)
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const j = (await r.json()) as SummaryData;
+        if (!cancelled) setPayload(j); // update payload once loaded
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message); // show error if fetch fails
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false); // hide loader
+      });
+
+      const dynamicLink = getLinkFromTitle(title);
+      setLink(dynamicLink ?? "https://scholar.google.com");
+    return () => {
+      cancelled = true;
+    };
     let cancelled = false;
     setLoading(true);   // show loader immediately
     setError(null);     // reset previous errors
@@ -395,8 +427,59 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
                     <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{String(v)}</p>
                   </SectionCard>
                 ))}
+              {/* Fixed bottom button */}
+      {title && (
+        <a
+          href={link} // use the link here
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+      position: "fixed",
+      bottom: 20,
+      right: 20,
+      padding: "12px 20px",
+      background: "#fff",    // white background
+      color: "#000",         // black text
+      borderRadius: 12,
+      textDecoration: "none",
+      fontWeight: 600,
+      boxShadow: "0 4px 10px rgba(0,0,0,0.4)",
+    }}
+        >
+          Open Article
+        </a>
+      )}
           </div>
         )}
+        
+
+        <div ref={containerRef} style={{ maxHeight: "78vh", overflow: "auto" }}>
+          {/* Initial state */}
+          {!title && !loading && !payload && !error && (
+            <div style={{ color: "#888", fontStyle: "italic" }}>
+              Select an article to summarize!
+            </div>
+          )}
+          
+        {loading && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
+            <Loader2
+              size={16}
+              style={{ 
+                animation: "spin 1s linear infinite" 
+              }}
+            />
+            Loading summary...    
+          </div>
+        )}
+
+        {!loading && error && (
+          <div style={{ color: "#ff6b6b" }}>Error: {error}</div>
+        )}
+
+        {!loading && payload && (
+          <div>
+            {/* render your summary and bullets here */}
         
 
         <div ref={containerRef} style={{ maxHeight: "78vh", overflow: "auto" }}>

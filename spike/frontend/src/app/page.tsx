@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { Box, Button, Stack } from "@mui/material";
 
+import { useState } from "react";
+import { Box, Button, Stack } from "@mui/material";
+
 import MainView from "../components/mainView";
 import TimeScaledTimeline from "../components/SimpleTimeline";
+
 import summary from "../components/summary.json";
 import tree from "../components/subjects_tree.json";
 import SubjectTree from "../components/SubjectTree";
@@ -14,6 +18,7 @@ import SummaryViewer from "../components/SummaryViewer";
 import AI_SUM from "../components/AI_SUM.json";
 
 export default function Home() {
+  const [view, setView] = useState<"results" | "timeline">("results");
   const [view, setView] = useState<"results" | "timeline">("results");
 
   return (

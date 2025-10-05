@@ -340,8 +340,6 @@ export default function MainView() {
                       </TableSortLabel>
                     </TableCell>
 
-                    <TableCell sx={{ color: "text.primary" }}>Link</TableCell>
-
                     <TableCell align="right" sortDirection={orderBy === "DP" ? order : false} sx={{ color: "text.primary" }}>
                       <TableSortLabel
                         active={orderBy === "DP"}
@@ -376,11 +374,6 @@ export default function MainView() {
                         <TableCell sx={{ color: "text.primary" }}>{pub.pmid}</TableCell>
                         <TableCell sx={{ color: "text.primary" }}>{pub.pmc_id ?? "-"}</TableCell>
                         <TableCell sx={{ color: "text.primary" }}>{pub.Title}</TableCell>
-                        <TableCell sx={{ color: "text.primary" }}>
-                          <MUILink href={pub.Link} target="_blank" rel="noopener noreferrer" color="inherit" underline="hover">
-                            {pub.Link}
-                          </MUILink>
-                        </TableCell>
                         <TableCell align="right" sx={{ color: "text.primary" }}>{pub.DP}</TableCell>
                       </TableRow>
                     );
