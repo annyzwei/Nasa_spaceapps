@@ -10,6 +10,12 @@ function getLinkFromTitle(title: string): string | null {
   const entry = summaryData.find((item) => item.Title === title);
   return entry?.Link ?? null;
 }
+import summaryData from "./summary.json";
+
+function getLinkFromTitle(title: string): string | null {
+  const entry = summaryData.find((item) => item.Title === title);
+  return entry?.Link ?? null;
+}
 
 export type SummaryData = {
   summary?: string;
@@ -147,6 +153,7 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
   const [playing, setPlaying] = useState<boolean>(true);
   const [speed, setSpeed] = useState<number>(msPerChar);
   const [link, setLink] = useState<string>("");
+  const [link, setLink] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
 
   let response_working = {};
@@ -194,12 +201,19 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
 
       const dynamicLink = getLinkFromTitle(title);
       setLink(dynamicLink ?? "https://scholar.google.com");
+      const dynamicLink = getLinkFromTitle(title);
+      setLink(dynamicLink ?? "https://scholar.google.com");
     return () => {
       cancelled = true;
     };
   }, [title]);
 
+  const [bookmarked, setBookmarked] = useState<boolean>(false);
 
+  const toggleBookmark = () => {
+    setBookmarked((b) => !b);
+    // Optional: persist bookmark in localStorage or call API
+  };
 
   // type summary
   const summaryText = (payload?.summary ?? "").toString();
@@ -277,8 +291,25 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
         boxSizing: "border-box",
       }}
     >
-      {/* Title */}
-      <h1 style={{ fontSize: 32, fontWeight: 800, margin: "0 0 12px" }}>{title || "AI Summary"}</h1>
+      {/* Title + Bookmark */}
+
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end", marginBottom: 10}}>
+        <button
+          onClick={toggleBookmark}
+          style={{
+            background: "transparent",
+            border: "2px solid #fff",
+            borderRadius: 8,
+            padding: "6px 12px",
+            color: bookmarked ? "#ffd700" : "#fff",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          {bookmarked ? "★ Bookmarked" : "☆ Bookmark"}
+        </button>
+      </div>
+      <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0 }}>{title || "AI Summary"}</h1>
 
       {/* Optional controls */}
       {controls && (
@@ -395,6 +426,28 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
                     <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{String(v)}</p>
                   </SectionCard>
                 ))}
+              {/* Fixed bottom button */}
+      {title && (
+        <a
+          href={link} // use the link here
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+      position: "fixed",
+      bottom: 20,
+      right: 20,
+      padding: "12px 20px",
+      background: "#fff",    // white background
+      color: "#000",         // black text
+      borderRadius: 12,
+      textDecoration: "none",
+      fontWeight: 600,
+      boxShadow: "0 4px 10px rgba(0,0,0,0.4)",
+    }}
+        >
+          Open Article
+        </a>
+      )}
           </div>
         )}
         
@@ -428,7 +481,9 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
             {/* render your summary and bullets here */}
           </div>
         )}
+        
 </div>
+
       </div>
 
       {/* Fixed bottom button */}
