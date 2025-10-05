@@ -10,6 +10,8 @@ import summary from "./summary.json";
 import SearchBar from "./searchBar";
 import SummaryViewer from "./SummaryViewer";
 import TimeScaledTimeline from "./SimpleTimeline";
+import SubjectTree from "./SubjectTree";
+import subjectTreeData from "./subjects_tree.json"; 
 
 // ---------------- Theme (dark) ----------------
 const darkTheme = createTheme({
@@ -164,7 +166,7 @@ export default function MainView() {
   const [liveSummary, setLiveSummary] = React.useState<SummaryRecord | null>(null);
   const [liveLoading, setLiveLoading] = React.useState(false);
   const [liveError, setLiveError] = React.useState<string | null>(null);
-  const [view, setView] = useState<"results" | "timeline">("results");
+  const [view, setView] = useState<"results" | "timeline" | "tree">("results");
 
   const handleSort = (property: keyof Pub) => () => {
     if (orderBy === property) setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -280,6 +282,12 @@ export default function MainView() {
             onClick={() => setView("timeline")}
           >
             Timeline
+          </Button>
+          <Button
+            variant={view === "tree" ? "contained" : "outlined"}
+            onClick={() => setView("tree")}
+          >
+            Tree
           </Button>
         </Stack>
         
@@ -409,6 +417,12 @@ export default function MainView() {
             />
           </Paper>
         </Box>}
+        
+        {view === "tree" && (
+          <Box sx={{ width: "100%", minHeight: 400, overflowX: "auto" }}>
+            <SubjectTree data={subjectTreeData} />
+          </Box>
+        )}
         </Box>
 
         {/* Right: Summary panel */}
