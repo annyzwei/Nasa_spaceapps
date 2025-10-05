@@ -10,6 +10,7 @@
   "dependencies": {
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
+    "@xyflow/system": "^0.0.70",
     "next": "^15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0"
