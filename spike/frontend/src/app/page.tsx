@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import styles from "./page.module.css";
-import {Button, Input, TextField, Typography} from "@mui/material";
+import {Box, Button, Input, TextField, Typography} from "@mui/material";
 import { useEffect, useState } from "react";
 
 import ThreeScene from "../components/componentJs.jsx"
 import MainView from "../components/mainView";
 import TimeScaledTimeline from "../components/SimpleTimeline";
 import summary from "../components/summary.json";
+import tree from "../components/subjects_tree.json";
+import SubjectTree from "../components/SubjectTree";
 
 export default function Home() {
 
@@ -45,6 +47,7 @@ export default function Home() {
     <MainView/>
     <TimeScaledTimeline items={summary}/>
     <ThreeScene/>
+    <SubjectTree data={tree} defaultOpenDepth={1} />
   </>
   );
 }

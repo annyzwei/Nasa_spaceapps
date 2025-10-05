@@ -9,6 +9,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import publications from "./SB_publication_PMC.json";
 import summary from "./summary.json";
 import SearchDialog from "./searchDialog";
+import tree from "subjects_tree.json";
 
 // ---------------- Theme (dark) ----------------
 const darkTheme = createTheme({
