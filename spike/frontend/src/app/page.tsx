@@ -11,6 +11,9 @@ import TimeScaledTimeline from "../components/SimpleTimeline";
 import summary from "../components/summary.json";
 import tree from "../components/subjects_tree.json";
 import SubjectTree from "../components/SubjectTree";
+import SummaryViewer from "../components/SummaryViewer";
+import AI_SUM from "../components/AI_SUM.json";
+
 
 export default function Home() {
 
@@ -44,6 +47,10 @@ export default function Home() {
       />
       <Button onClick={() => {if (color == "red") setColor("green"); else setColor("red")}} sx={{backgroundColor: "white"}}></Button>
     </div> */}
+    <Box sx={{ my: 2 }}>
+        <SummaryViewer data={AI_SUM} msPerChar={10} />
+    </Box>
+
     <MainView/>
     <TimeScaledTimeline items={summary}/>
     <ThreeScene/>
