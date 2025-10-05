@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 import {Box, Button, Input, TextField, Typography} from "@mui/material";
 import { useEffect, useState } from "react";
 
-import ThreeScene from "../components/componentJs.jsx"
+import PrettyGlobe from "../components/PrettyGlobe";
 import MainView from "../components/mainView";
 import TimeScaledTimeline from "../components/SimpleTimeline";
 import summary from "../components/summary.json";
@@ -53,7 +53,7 @@ export default function Home() {
 
     <MainView/>
     <TimeScaledTimeline items={summary}/>
-    <ThreeScene/>
+    <PrettyGlobe/>
     <SubjectTree data={tree} defaultOpenDepth={1} />
   </>
   );
