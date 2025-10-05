@@ -8,6 +8,7 @@ import TimeScaledTimeline from "../components/SimpleTimeline";
 
 import summary from "../components/summary.json";
 import TeamTitle from "../components/TeamTitle";
+import PrettyGlobe from "../components/PrettyGlobe";
 
 export default function Home() {
   const [view, setView] = useState<"results" | "timeline">("results");
@@ -17,6 +18,7 @@ export default function Home() {
     <TeamTitle teamName="SPIKE" exclamations={3} />
 
     <MainView />
+    <PrettyGlobe />
     </>
   );
 }
