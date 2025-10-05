@@ -12,3 +12,5 @@ spike/backend/summary.json
 
 /spike/node_modules/*
 /spike/.next/*
+*.env
+

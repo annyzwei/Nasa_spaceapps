@@ -1,9 +1,10 @@
 import os
 import argparse
+import openai
 import json
-import downloader
-import extract_text
-import ai_prompt
+from . import downloader
+from . import extract_text
+from . import ai_prompt
 
 RAW_DIR = "raw"
 TEXT_DIR = "extracted_text"
@@ -35,20 +36,30 @@ def build_summary():
     prompt = ai_prompt.build_prompt_from_sections(sections)
 
     # Call OpenAI API to get summary
-    response = ai_prompt.openai.ChatCompletion.create(
+    # response = ai_prompt.openai.ChatCompletion.create(
+    #     model="gpt-4o-mini",
+    #     messages=[{"role": "user", "content": prompt}],
+    #     temperature=0
+    # )
+    
+    response = openai.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
         temperature=0
     )
-
+    print(response)
     # Parse text output
     summary_text = response.choices[0].message.content
 
-    # Save raw text JSON (you could optionally parse into dict here)
-    with open(SUMMARY_JSON, "w", encoding="utf-8") as f:
-        f.write(summary_text)
+    # # Save raw text JSON (you could optionally parse into dict here)
+    # with open(SUMMARY_JSON, "w", encoding="utf-8") as f:
+    #     f.write(summary_text)
+    
+    print(summary_text)
+    return summary_text
 
-    print(f"Saved summary JSON to {SUMMARY_JSON}")
 
 
 def get_summary(article_name: str):
@@ -59,9 +70,8 @@ def get_summary(article_name: str):
     run_extraction()
 
     print("Building summary...")
-    build_summary()
+    return build_summary()
 
-    print("All steps complete.")
 
 
 

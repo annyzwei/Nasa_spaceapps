@@ -52,13 +52,12 @@ def build_prompt_from_sections(sections: Dict[str, str]) -> str:
 
     instructions = (
         "You are an expert scientific assistant helping researchers identify key findings and new, "
-        "testable hypotheses from academic articles. Focus on factual accuracy. Assume the resesarchers "
-        "have medium to little understanding of the topic and use language accordingly.\n\n"
+        "testable hypotheses from academic articles. Focus on factual accuracy.\n\n"
         "Task:\n"
         "- Provide a concise 2–3 sentence summary.\n"
-        "- Extract key findings (2-4 bullet list).\n"
-        "- Note limitations/gaps (2-4 bullet list).\n"
-        "- Suggest future research directions (2-4 bullet list).\n\n"
+        "- Extract key findings (bullet list).\n"
+        "- Note limitations/gaps.\n"
+        "- Suggest future research directions.\n\n"
         + _JSON_FORMAT_SPEC
     )
 

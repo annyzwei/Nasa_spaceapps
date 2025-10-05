@@ -47,10 +47,6 @@ export default function Home() {
       />
       <Button onClick={() => {if (color == "red") setColor("green"); else setColor("red")}} sx={{backgroundColor: "white"}}></Button>
     </div> */}
-    <Box sx={{ my: 2 }}>
-        <SummaryViewer data={AI_SUM} msPerChar={10} />
-    </Box>
-
     <MainView/>
     <TimeScaledTimeline items={summary}/>
     <ThreeScene/>
