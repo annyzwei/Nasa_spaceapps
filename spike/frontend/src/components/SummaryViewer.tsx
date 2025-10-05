@@ -129,13 +129,13 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
   msPerChar = 18,
   autoScroll = true,
   className = "",
-  title = "Bioscience Summary",
+  title,
   controls = false,
   speedControl = false,
   footerTip = false,
 }) => {
   const [payload, setPayload] = useState<SummaryData | null>(data ?? null);
-  const [loading, setLoading] = useState<boolean>(!data && !!src);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [playing, setPlaying] = useState<boolean>(true);
@@ -167,21 +167,29 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
   useEffect(() => {
     if (!title) return;
 
-    fetch(`http://127.0.0.1:5000/get_summary/${title}`).then(async (r) => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const j = (await r.json()) as SummaryData;
-      console.log(j);
-      setPayload(j);
-    })
+    let cancelled = false;
+    setLoading(true);   // show loader immediately
+    setError(null);     // reset previous errors
+    setPayload(null);   // clear old data while loading
+
+    fetch(`http://127.0.0.1:5000/get_summary/${title}`)
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const j = (await r.json()) as SummaryData;
+        if (!cancelled) setPayload(j); // update payload once loaded
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message); // show error if fetch fails
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false); // hide loader
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [title]);
 
-  // useEffect(() => {
-  //   if (payload) {
-  //     response_working = payload;
-  //     console.log("Updated payload:", payload);
-  //     console.log("Updated summary:", payload.summary);
-  //   }
-  // }, [payload]);
 
 
   // type summary
@@ -261,7 +269,7 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
       }}
     >
       {/* Title */}
-      <h1 style={{ fontSize: 32, fontWeight: 800, margin: "0 0 12px" }}>{title}</h1>
+      <h1 style={{ fontSize: 32, fontWeight: 800, margin: "0 0 12px" }}>{title || "AI Summary"}</h1>
 
       {/* Optional controls */}
       {controls && (
@@ -310,11 +318,6 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
         }}
       >
         {/* States */}
-        {loading && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
-            <Loader2 size={16} className="spin" /> Loading summary JSON...
-          </div>
-        )}
         {error && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ff6b6b" }}>
             <TriangleAlert size={16} /> Failed to load: {error}
@@ -385,12 +388,38 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
                 ))}
           </div>
         )}
+        
 
-        {!loading && !payload && !error && (
-          <div style={{ fontSize: 14, color: "#bbb" }}>
-            Provide <code>src</code> or <code>data</code> props to render content.
+        <div ref={containerRef} style={{ maxHeight: "78vh", overflow: "auto" }}>
+          {/* Initial state */}
+          {!title && !loading && !payload && !error && (
+            <div style={{ color: "#888", fontStyle: "italic" }}>
+              Select an article to summarize!
+            </div>
+          )}
+          
+        {loading && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
+            <Loader2
+              size={16}
+              style={{ 
+                animation: "spin 1s linear infinite" 
+              }}
+            />
+            Loading summary...    
           </div>
         )}
+
+        {!loading && error && (
+          <div style={{ color: "#ff6b6b" }}>Error: {error}</div>
+        )}
+
+        {!loading && payload && (
+          <div>
+            {/* render your summary and bullets here */}
+          </div>
+        )}
+</div>
       </div>
 
       {/* Optional footer */}

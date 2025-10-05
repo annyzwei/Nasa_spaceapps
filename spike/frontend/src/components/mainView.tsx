@@ -122,129 +122,6 @@ function buildLiveQuery(pub: Pub) {
   };
 }
 
-// // ---------------- Summary Viewer ----------------
-// function SummaryViewer({
-//   pub,
-//   record,
-//   loading,
-//   error,
-// }: {
-//   pub: Pub | null;
-//   record: SummaryRecord | null;
-//   loading: boolean;
-//   error: string | null;
-// }) {
-//   if (!pub) {
-//     return (
-//       <Paper sx={{ p: 2, bgcolor: "background.paper", borderLeft: "1px solid", borderColor: "divider" }}>
-//         <Typography variant="h6" gutterBottom>Summary</Typography>
-//         <Typography variant="body2" color="text.secondary">
-//           Select a paper from the table to see its summary.
-//         </Typography>
-//       </Paper>
-//     );
-//   }
-
-//   return (
-//     <Paper sx={{ p: 2, bgcolor: "background.paper", borderLeft: "1px solid", borderColor: "divider", maxHeight: "80vh", overflow: "auto" }}>
-//       <Stack spacing={1.5}>
-//         <Typography variant="overline" color="text.secondary">Selected Paper</Typography>
-//         <Typography variant="h6" sx={{ fontWeight: 600 }}>{pub.Title}</Typography>
-//         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-//           {pub.pmid && <Chip size="small" label={`PMID: ${pub.pmid}`} />}
-//           {pub.pmc_id && <Chip size="small" label={`PMC: ${pub.pmc_id}`} />}
-//           <MUILink href={pub.Link} target="_blank" rel="noopener noreferrer" underline="hover" color="inherit">
-//             Open article
-//           </MUILink>
-//         </Stack>
-
-//         <Divider sx={{ my: 1 }} />
-
-//         {loading && (
-//           <Stack direction="row" spacing={1} alignItems="center">
-//             <CircularProgress size={18} />
-//             <Typography variant="body2">Generating live summary…</Typography>
-//           </Stack>
-//         )}
-
-//         {error && (
-//           <Typography variant="body2" color="error">{error}</Typography>
-//         )}
-
-//         {!loading && !record && !error && (
-//           <Typography variant="body2" color="text.secondary">
-//             No summary found for this paper yet. Generate one from the backend and refresh.
-//           </Typography>
-//         )}
-
-//         {!loading && record?.summary && (
-//           <Card variant="outlined">
-//             <CardContent>
-//               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Overview</Typography>
-//               <Typography variant="body2" style={{ whiteSpace: "pre-wrap" }}>{record.summary}</Typography>
-//             </CardContent>
-//           </Card>
-//         )}
-
-//         {!loading && record?.key_findings && record.key_findings.length > 0 && (
-//           <Card variant="outlined">
-//             <CardContent>
-//               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Key Findings</Typography>
-//               <Box component="ul" sx={{ pl: 3, m: 0 }}>
-//                 {record.key_findings.map((it, i) => (
-//                   <li key={i}><Typography variant="body2">{it}</Typography></li>
-//                 ))}
-//               </Box>
-//             </CardContent>
-//           </Card>
-//         )}
-
-//         {!loading && record?.limitations && record.limitations.length > 0 && (
-//           <Card variant="outlined">
-//             <CardContent>
-//               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Limitations</Typography>
-//               <Box component="ul" sx={{ pl: 3, m: 0 }}>
-//                 {record.limitations.map((it, i) => (
-//                   <li key={i}><Typography variant="body2">{it}</Typography></li>
-//                 ))}
-//               </Box>
-//             </CardContent>
-//           </Card>
-//         )}
-
-//         {!loading && record?.future_directions && record.future_directions.length > 0 && (
-//           <Card variant="outlined">
-//             <CardContent>
-//               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Future Directions</Typography>
-//               <Box component="ul" sx={{ pl: 3, m: 0 }}>
-//                 {record.future_directions.map((it, i) => (
-//                   <li key={i}><Typography variant="body2">{it}</Typography></li>
-//                 ))}
-//               </Box>
-//             </CardContent>
-//           </Card>
-//         )}
-
-//         {!loading && record?.sections && (
-//           <Card variant="outlined">
-//             <CardContent>
-//               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Sections</Typography>
-//               <Stack spacing={1}>
-//                 {Object.entries(record.sections).map(([k, v]) => (
-//                   <Box key={k}>
-//                     <Typography variant="subtitle2" sx={{ textTransform: "capitalize", fontWeight: 600 }}>{k}</Typography>
-//                     <Typography variant="body2" style={{ whiteSpace: "pre-wrap" }}>{v}</Typography>
-//                   </Box>
-//                 ))}
-//               </Stack>
-//             </CardContent>
-//           </Card>
-//         )}
-//       </Stack>
-//     </Paper>
-//   );
-// }
-
 // =====================================================
 // MainView: table (left) + summary viewer (right)
 // =====================================================
@@ -374,12 +251,15 @@ export default function MainView() {
   return (
     <ThemeProvider theme={darkTheme}>
       {/* Force side-by-side layout at all widths */}
+      <Box sx={{display: "flex", flexDirection: "column", height: "100%", bgcolor: "background.default"}}>
+        <Box sx={{flex: '0 0 auto'}}>
       <SearchBar value={filters} onApply={applyFilters} onClear={clearFilters} />
-      <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start", width: "100%" }}>
+      </Box>
+      <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start", width: "100%", mt: 2, flex: 1, minHeight: 0}}>
         {/* Left: Table */}
         
-        <Box sx={{ flex: 7, minWidth: 0 }}>
-          <Paper sx={{ p: 2, bgcolor: "background.paper", minWidth: 0 }}>
+        <Box sx={{ flex: 7, minWidth: 0, bgcolor: "background.default" }}>
+          <Paper sx={{ p: 2, bgcolor: ".paper", minWidth: 0 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
               <div style={{ fontWeight: 600 }}>Publications</div>
             </Stack>
@@ -493,9 +373,26 @@ export default function MainView() {
 
         {/* Right: Summary panel */}
         <Box sx={{ flex: 5, minWidth: 0, position: "sticky", top: 16 }}>
-          <SummaryViewer title={selected?.Title} />
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              bgcolor: "background.paper",
+              boxShadow: "0px 4px 20px rgba(0,0,0,0.4)",
+              ml: 2, // margin-left to give space from table
+              minHeight: "80vh",
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+                  pr: 4, // padding-right: theme spacing (adds space inside)
+    mr: 2, // margin-right: adds space outside
+            }}
+          >
+            <SummaryViewer title={selected?.Title} />
+          </Paper>
         </Box>
       </Stack>
+      </Box>
     </ThemeProvider>
   );
 }
