@@ -33,9 +33,3 @@ def download_article_by_title(article_title, json_path="data/SB_Publication_PMC.
         time.sleep(1)  # polite pause
     except Exception as e:
         print(f"Error downloading {matched['Title']}: {e}")
-
-# Example usage
-if __name__ == "__main__":
-    # specific article
-    article = "Human Neural Stem Cells Flown into Space Proliferate and Generate Young Neurons" 
-    download_article_by_title(article)

@@ -2,7 +2,7 @@
 
 backend/venv
 .venv/
-backend/.env
+spike/backend/.env
 
 # Python bytecode
 backend/__pycache__/
