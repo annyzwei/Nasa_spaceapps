@@ -6,7 +6,6 @@ import { Typography } from "@mui/material";
 import { stringify } from "querystring";
 import summaryData from "./summary.json";
 
-
 function getLinkFromTitle(title: string): string | null {
   const entry = summaryData.find((item) => item.Title === title);
   return entry?.Link ?? null;
