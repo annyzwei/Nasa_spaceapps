@@ -4,7 +4,7 @@ import json
 from bs4 import BeautifulSoup
 
 RAW_DIR = "raw"
-TEXT_DIR = "text"
+TEXT_DIR = "extracted_text"
 os.makedirs(TEXT_DIR, exist_ok=True)
 
 # Key sections by title (lowercase for consistency)
@@ -81,8 +81,7 @@ def main():
 
         sections_dict = clean_text_to_dict(html)
 
-        # fname = os.path.splitext(os.path.basename(path))[0] + ".json" # save each json with article name
-        fname = "temparticle.json"
+        fname = "extracted_temparticle.json"
         outpath = os.path.join(TEXT_DIR, fname)
 
         # Write the dictionary to a JSON file

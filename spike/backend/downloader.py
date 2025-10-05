@@ -1,48 +1,41 @@
 import json, os, re, time, requests
 
-RAW_DIRECTORY = "../data/raw"
+RAW_DIRECTORY = "raw"
 os.makedirs(RAW_DIRECTORY, exist_ok=True)
 
-def safe_filename(title):
-    return re.sub(r"[^\w\s-]", "", title).strip().replace(" ", "_")[:80]
-
 def fetch_page(url):
-    headers = {"User-Agent": "SpikeResearchBot/1.0"}  # identify your bot
+    """Download page HTML with headers and timeout."""
+    headers = {"User-Agent": "SpikeResearchBot/1.0"}
     r = requests.get(url, headers=headers, timeout=(5, 10))
     r.raise_for_status()
     return r.text
 
-def main(keywords):
-    # Load list of papers
-    with open("data/SB_Publication_PMC.json", "r", encoding="utf-8") as f:
+def download_article_by_title(article_title, json_path="data/SB_Publication_PMC.json"):
+    """Download a single article by exact title."""
+    with open(json_path, "r", encoding="utf-8") as f:
         papers = json.load(f)
 
-    # Filter papers by any keyword match in title
-    filtered_papers = [
-        p for p in papers
-        if any(kw.lower() in p["Title"].lower() for kw in keywords)
-    ]
-    print(f"Found {len(filtered_papers)} papers matching {keywords}")
+    # Look for exact match (case-insensitive)
+    matched = next((p for p in papers if p["Title"].strip().lower() == article_title.lower()), None)
 
-    for paper in filtered_papers:
-        fname = safe_filename(paper["Title"]) + ".html"
-        path = os.path.join(RAW_DIRECTORY, fname)
+    if not matched:
+        print(f"No article found with title: {article_title}")
+        return
 
-        if os.path.exists(path):
-            print(f"Already downloaded: {paper['Title']}")
-            continue
+    fname = "raw_temparticle.html"
+    path = os.path.join(RAW_DIRECTORY, fname)
 
-        try:
-            html = fetch_page(paper["Link"])
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(html)
-            print(f"Saved {paper['Title']}")
-            time.sleep(1)  # polite pause
-        except Exception as e:
-            print(f"Skipping {paper['Title']} due to error: {e}")
-            continue
+    try:
+        html = fetch_page(matched["Link"])
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"Saved {matched['Title']}")
+        time.sleep(1)  # polite pause
+    except Exception as e:
+        print(f"Error downloading {matched['Title']}: {e}")
 
+# Example usage
 if __name__ == "__main__":
-    keywords = input("Enter keywords (separated by commas): ").split(",")
-    keywords = [kw.strip() for kw in keywords if kw.strip()]
-    main(keywords)
+    # specific article
+    article = "Human Neural Stem Cells Flown into Space Proliferate and Generate Young Neurons" 
+    download_article_by_title(article)
