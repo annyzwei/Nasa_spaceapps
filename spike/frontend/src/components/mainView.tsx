@@ -290,9 +290,9 @@ export default function MainView() {
             Tree
           </Button>
         </Stack>
-        
-       
-        {view === "timeline" && <TimeScaledTimeline items={rows}/>}
+
+
+        {view === "timeline" && <TimeScaledTimeline items={rows} onClick={setSelected} />}
         {view == "results" && <Box sx={{ flex: 7, minWidth: 0, bgcolor: "background.default" }}>
           <Paper sx={{ p: 2, bgcolor: ".paper", minWidth: 0 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>

@@ -4,6 +4,12 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Play, Pause, RotateCw, FileDown, Loader2, TriangleAlert } from "lucide-react";
 import { Typography } from "@mui/material";
 import { stringify } from "querystring";
+import summaryData from "./summary.json";
+
+function getLinkFromTitle(title: string): string | null {
+  const entry = summaryData.find((item) => item.Title === title);
+  return entry?.Link ?? null;
+}
 
 export type SummaryData = {
   summary?: string;
@@ -140,6 +146,7 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
 
   const [playing, setPlaying] = useState<boolean>(true);
   const [speed, setSpeed] = useState<number>(msPerChar);
+  const [link, setLink] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
 
   let response_working = {};
@@ -185,6 +192,8 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
         if (!cancelled) setLoading(false); // hide loader
       });
 
+      const dynamicLink = getLinkFromTitle(title);
+      setLink(dynamicLink ?? "https://scholar.google.com");
     return () => {
       cancelled = true;
     };
@@ -421,6 +430,29 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
         )}
 </div>
       </div>
+
+      {/* Fixed bottom button */}
+      {title && (
+        <a
+          href={link} // use the link here
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+      position: "fixed",
+      bottom: 20,
+      right: 20,
+      padding: "12px 20px",
+      background: "#fff",    // white background
+      color: "#000",         // black text
+      borderRadius: 12,
+      textDecoration: "none",
+      fontWeight: 600,
+      boxShadow: "0 4px 10px rgba(0,0,0,0.4)",
+    }}
+        >
+          Open Article
+        </a>
+      )}
 
       {/* Optional footer */}
       {footerTip && (
