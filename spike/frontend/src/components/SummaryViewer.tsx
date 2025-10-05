@@ -6,11 +6,6 @@ import { Typography } from "@mui/material";
 import { stringify } from "querystring";
 import summaryData from "./summary.json";
 
-function getLinkFromTitle(title: string): string | null {
-  const entry = summaryData.find((item) => item.Title === title);
-  return entry?.Link ?? null;
-}
-import summaryData from "./summary.json";
 
 function getLinkFromTitle(title: string): string | null {
   const entry = summaryData.find((item) => item.Title === title);
@@ -153,7 +148,6 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
   const [playing, setPlaying] = useState<boolean>(true);
   const [speed, setSpeed] = useState<number>(msPerChar);
   const [link, setLink] = useState<string>("");
-  const [link, setLink] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
 
   let response_working = {};
@@ -199,8 +193,6 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
         if (!cancelled) setLoading(false); // hide loader
       });
 
-      const dynamicLink = getLinkFromTitle(title);
-      setLink(dynamicLink ?? "https://scholar.google.com");
       const dynamicLink = getLinkFromTitle(title);
       setLink(dynamicLink ?? "https://scholar.google.com");
     return () => {
