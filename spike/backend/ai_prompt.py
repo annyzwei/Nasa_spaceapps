@@ -13,8 +13,6 @@ _JSON_FORMAT_SPEC = """Return ONLY strict JSON (no prose, no markdown) with this
 {
   "summary": "string (2–3 sentences, factual and concise)",
   "key_findings": ["string", "..."],
-  "hypotheses": ["string", "..."],                // testable ideas/questions
-  "thesis_candidates": ["string", "..."],         // 1–3 concise, arguable thesis statements
   "limitations": ["string", "..."],
   "future_directions": ["string", "..."]
 }
@@ -58,7 +56,6 @@ def build_prompt_from_sections(sections: Dict[str, str]) -> str:
         "Task:\n"
         "- Provide a concise 2–3 sentence summary.\n"
         "- Extract key findings (bullet list).\n"
-        "- Propose hypothesis suggestions (testable research questions).\n"
         "- Note limitations/gaps.\n"
         "- Suggest future research directions.\n\n"
         + _JSON_FORMAT_SPEC
