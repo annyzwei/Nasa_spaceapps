@@ -62,7 +62,7 @@ def fetch_pmc_data(pmc_id, retries=5, delay=1):
                 abstract = " ".join([p.text.strip() for p in abstract_el.findall('jats:p', namespaces=ns) if p.text])
 
             # Tags
-            tags = [subj.text.strip() for subj in root.findall('.//jats:subject', namespaces=ns) if subj.text]
+            tags = {subj.text.strip() for subj in root.findall('.//jats:subject', namespaces=ns) if subj.text}
             all_tags.update(tags)
 
             # Throttle between requests
@@ -77,13 +77,13 @@ def fetch_pmc_data(pmc_id, retries=5, delay=1):
                 delay *= 2  # exponential backoff
             else:
                 print(f"HTTP error fetching {pmc_id}: {e}")
-                return None, None, None, None, []
+                return None, None, None, None, {}
         except Exception as e:
             print(f"Error fetching {pmc_id}: {e}")
-            return None, None, None, None, []
+            return None, None, None, None, {}
 
     print(f"Failed to fetch {pmc_id} after {retries} retries")
-    return None, None, None, None, []
+    return None, None, None, None, {}
 
 def get_metadata(df):
     results = df['pmc_id'].apply(fetch_pmc_data)
