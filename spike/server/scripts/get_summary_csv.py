@@ -4,7 +4,7 @@ from xml.etree import ElementTree as ET
 import requests
 import time
 
-DATA_CSV = "./../../backend/data/SB_publication_PMC.csv"
+DATA_CSV = "/Users/anny/Code/nasa_spaceapps/spike/server/scripts/SB_publication_PMC.csv"
 OUTPUT_CSV_PATH = "./../data/summary"
 OUTPUT_TAGS_PATH = "./../data/all_tags"
 
@@ -98,7 +98,7 @@ def main():
     get_metadata(df)
 
     df.to_csv(f"{OUTPUT_CSV_PATH}.csv", index=False)
-    df.to_json(f"{OUTPUT_CSV_PATH}.json", orient="records", force_ascii=False, indent=4)
+    df.to_json(f"output.json", orient="records", force_ascii=False, indent=4)
 
     my_list = list(all_tags)
     with open(f"{OUTPUT_TAGS_PATH}.json", "w") as f:

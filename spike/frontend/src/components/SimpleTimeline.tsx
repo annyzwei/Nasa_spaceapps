@@ -1,6 +1,7 @@
 // SimpleTimeline.tsx
 import * as React from "react";
 import { Box, Typography, Popper, Paper } from "@mui/material";
+import { Pub } from "./mainView";
 
 export type Item = {
   Title: string;
@@ -13,7 +14,7 @@ export type Item = {
 };
 
 type Props = {
-  items: Item[];
+  items: Pub[];
 
   /** Auto-height scale (ignored if heightPx is set) */
   pxPerDay?: number;
@@ -47,6 +48,7 @@ type Props = {
 
   /** Fixed total height (px). If set, overrides auto height */
   heightPx?: number;
+  onClick?: (item: Pub) => void;
 };
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
@@ -82,6 +84,7 @@ export default function SimpleTimeline({
   minGapPx = 28,
   labelBlockPx = 44,   // ~ two text lines (date + ID) with a bit of padding
   heightPx,
+  onClick
 }: Props) {
   // Normalize + sort by date (oldest → newest)
   const data = React.useMemo(
@@ -156,18 +159,18 @@ export default function SimpleTimeline({
     align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center";
 
   return (
-    <Box sx={{ display: "flex", justifyContent: justify, pl: plUnits, py: 3 }} onMouseLeave={leave}>
+    <Box sx={{ display: "flex", justifyContent: "center", pl: plUnits, py: 3, }} onMouseLeave={leave}>
       <Box
         sx={{
           position: "relative",
           width: 720,
           maxWidth: "100%",
           height: contentHeight,
-          left: offsetPx, // nudge the whole block horizontally
+          left: 100, // nudge the whole block horizontally
         }}
       >
         {/* Rail */}
-        <Box sx={{ position: "absolute", left: gutter, top: 0, bottom: 0, width: 2, bgcolor: "divider" }} />
+        <Box sx={{ position: "absolute", top: 0, bottom: 0, width: 2, bgcolor: "divider" }} />
 
         {/* Events */}
         {data.map((it, i) => {
@@ -182,6 +185,7 @@ export default function SimpleTimeline({
               <Box
                 onMouseEnter={enter(i)}
                 onMouseLeave={leave}
+                onClick={() => onClick && onClick(it)}
                 sx={{
                   position: "absolute",
                   left: gutter,
