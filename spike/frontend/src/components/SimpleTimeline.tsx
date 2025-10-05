@@ -29,6 +29,7 @@ type Props = {
   minGapPx?: number;
   labelBlockPx?: number;
   heightPx?: number;
+  onClick?: (item: Pub) => void;
 };
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
@@ -63,6 +64,7 @@ export default function SimpleTimeline({
   minGapPx = 28,
   labelBlockPx = 80,
   heightPx,
+  onClick
 }: Props) {
   const data = React.useMemo(
     () =>
@@ -142,6 +144,7 @@ export default function SimpleTimeline({
             <React.Fragment key={`${it.pmc_id}-${i}`}>
               {/* Dot */}
               <Box
+                onClick={() => onClick && onClick(it)}
                 sx={{
                   position: "absolute",
                   left: gutter,
@@ -154,6 +157,7 @@ export default function SimpleTimeline({
                   transform: "translate(-50%, -50%)",
                 }}
               />
+
 
               {/* Label Box */}
               <Paper
