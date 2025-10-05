@@ -48,7 +48,7 @@ type Props = {
 
   /** Fixed total height (px). If set, overrides auto height */
   heightPx?: number;
-  onClick?: () => void;
+  onClick?: (item: Pub) => void;
 };
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
@@ -185,6 +185,7 @@ export default function SimpleTimeline({
               <Box
                 onMouseEnter={enter(i)}
                 onMouseLeave={leave}
+                onClick={() => onClick && onClick(it)}
                 sx={{
                   position: "absolute",
                   left: gutter,
