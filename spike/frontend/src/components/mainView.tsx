@@ -8,7 +8,8 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import publications from "./SB_publication_PMC.json";
 import summary from "./summary.json";
-import SearchDialog from "./searchDialog";
+import SearchBar from "./searchBar";
+
 
 // ---------------- Theme (dark) ----------------
 const darkTheme = createTheme({
@@ -25,7 +26,15 @@ const darkTheme = createTheme({
 
 // ---------------- Types ----------------
 type Order = "asc" | "desc";
-export type Pub = { Title: string; Link: string; DP: string; pmc_id: string; pmid: string; AB: string; AU: string; };
+export type Pub = {
+  Title: string;       // article title
+  Link: string;        // URL or PMC link
+  pmid: string | number; // PubMed ID
+  DP: string;          // publication date (ISO string)
+  AB?: string;         // abstract
+  AU?: string;         // authors
+  tags: string[];      // array of tag strings
+}
 export type Filters = {
   title: string;
   link: string;
@@ -33,6 +42,9 @@ export type Filters = {
   pmidMax: string;
   dateFrom: string; // yyyy-mm-dd
   dateTo: string;   // yyyy-mm-dd
+  includeTags: string[];
+  includeLogic: "AND" | "OR";
+  excludeTags: string[];
 };
 
 // ---------------- Utilities ----------------
@@ -59,6 +71,35 @@ function stableSort<T>(arr: readonly T[], cmp: (a: T, b: T) => number): T[] {
             .map(([el]) => el);
 }
 
+
+function matchesFilters(item: Pub, filters: Filters) {
+  const titleMatch = !filters.title || item.Title.toLowerCase().includes(filters.title.toLowerCase());
+  const linkMatch = !filters.link || item.Link.toLowerCase().includes(filters.link.toLowerCase());
+  
+  const pmidMatch =
+    (!filters.pmidMin || Number(item.pmid) >= Number(filters.pmidMin)) &&
+    (!filters.pmidMax || Number(item.pmid) <= Number(filters.pmidMax));
+
+  const dateMatch =
+    (!filters.dateFrom || new Date(item.DP) >= new Date(filters.dateFrom)) &&
+    (!filters.dateTo || new Date(item.DP) <= new Date(filters.dateTo));
+
+  // Include tags logic
+  const includeMatch =
+    filters.includeTags.length === 0 ||
+    (filters.includeLogic === "AND"
+      ? filters.includeTags.every((tag) => item.tags.includes(tag))
+      : filters.includeTags.some((tag) => item.tags.includes(tag)));
+
+  // Exclude tags logic
+  const excludeMatch =
+    filters.excludeTags.length === 0 ||
+    !filters.excludeTags.some((tag) => item.tags.includes(tag));
+
+  return titleMatch && linkMatch && pmidMatch && dateMatch && includeMatch && excludeMatch;
+}
+
+
 // =====================================================
 // MainView: uses SearchDialog; sorting, filtering, dark theme
 // =====================================================
@@ -74,6 +115,9 @@ export default function MainView() {
     pmidMax: "",
     dateFrom: "",
     dateTo: "",
+    includeTags: [],
+    includeLogic: "AND",
+    excludeTags: []
   });
 
   const handleSort = (property: keyof Pub) => () => {
@@ -85,26 +129,9 @@ export default function MainView() {
   const filtered = React.useMemo(() => {
     const list = summary as Pub[];
 
-    const t = filters.title.trim().toLowerCase();
-    const l = filters.link.trim().toLowerCase();
-    const pmidMin = filters.pmidMin ? Number(filters.pmidMin) : null;
-    const pmidMax = filters.pmidMax ? Number(filters.pmidMax) : null;
-    const df = filters.dateFrom ? new Date(filters.dateFrom) : null;
-    const dt = filters.dateTo ? new Date(filters.dateTo) : null;
-
-    return list.filter((p) => {
-      if (t && !p.Title?.toLowerCase().includes(t)) return false;
-      if (l && !p.Link?.toLowerCase().includes(l)) return false;
-      if (pmidMin !== null && Number.isFinite(pmidMin) && !(Number(p.pmid) >= pmidMin)) return false;
-      if (pmidMax !== null && Number.isFinite(pmidMax) && !(Number(p.pmid) <= pmidMax)) return false;
-      if (df || dt) {
-        const d = new Date(p.DP || "");
-        if (df && !(d >= df)) return false;
-        if (dt && !(d <= dt)) return false;
-      }
-      return true;
-    });
+    return list.filter((item) => matchesFilters(item, filters));
   }, [filters]);
+
 
   const rows = React.useMemo(
     () => stableSort(filtered, getComparator(order, orderBy)),
@@ -126,13 +153,10 @@ export default function MainView() {
       <Paper sx={{ p: 2, bgcolor: "background.paper" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <div style={{ fontWeight: 600 }}>Publications</div>
-          <IconButton onClick={openDialog} size="small" aria-label="Open search filters">
-            <SearchIcon sx={{ color: "text.primary" }} />
-          </IconButton>
         </Stack>
 
         {/* Search dialog component */}
-        <SearchDialog open={open} value={filters} onApply={applyFilters} onClose={closeDialog} onClear={clearFilters} />
+        <SearchBar value={filters} onApply={applyFilters} onClear={clearFilters} />
 
         <TableContainer sx={{ bgcolor: "background.paper" }}>
           <Table>

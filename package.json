@@ -5,6 +5,8 @@
     "@mui/icons-material": "^7.3.4",
     "@mui/lab": "^7.0.1-beta.18",
     "@mui/material": "^7.3.4",
+    "flask": "^0.2.10",
+    "flask-cors": "^0.0.1",
     "three": "^0.180.0"
   }
 }
