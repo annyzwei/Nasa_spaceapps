@@ -161,7 +161,7 @@ def main():
         df["pmc_id"] = df["Link"].str.extract(r'articles/(PMC\d+)/?')
 
     # Optional: test on a subset
-    # df = df.head(100)
+    # df = df.head(20)
 
     combo_root = build_one_tree_with_pmc_leaves(df)
     out_path = os.path.join(OUTPUT_DIR, OUTPUT_JSON)

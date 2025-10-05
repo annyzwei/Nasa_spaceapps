@@ -2,6 +2,8 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Play, Pause, RotateCw, FileDown, Loader2, TriangleAlert } from "lucide-react";
+import { Typography } from "@mui/material";
+import { stringify } from "querystring";
 
 export type SummaryData = {
   summary?: string;
@@ -119,6 +121,8 @@ const BulletTyper: React.FC<{
   return <>{typed}{!done && <span style={{ display: "inline-block", width: 6, height: 20, background: "#888", marginLeft: 0 }} />}</>;
 };
 
+
+
 const SummaryViewer: React.FC<SummaryViewerProps> = ({
   src,
   data,
@@ -136,6 +140,9 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
 
   const [playing, setPlaying] = useState<boolean>(true);
   const [speed, setSpeed] = useState<number>(msPerChar);
+  const [summary, setSummary] = useState<string>("");
+
+  let response_working = {};
   useEffect(() => { setSpeed(msPerChar); }, [msPerChar]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -156,6 +163,26 @@ const SummaryViewer: React.FC<SummaryViewerProps> = ({
     }
     return () => { cancelled = true; };
   }, [src, data]);
+
+  useEffect(() => {
+    if (!title) return;
+
+    fetch(`http://127.0.0.1:5000/get_summary/${title}`).then(async (r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const j = (await r.json()) as SummaryData;
+      console.log(j);
+      setPayload(j);
+    })
+  }, [title]);
+
+  // useEffect(() => {
+  //   if (payload) {
+  //     response_working = payload;
+  //     console.log("Updated payload:", payload);
+  //     console.log("Updated summary:", payload.summary);
+  //   }
+  // }, [payload]);
+
 
   // type summary
   const summaryText = (payload?.summary ?? "").toString();
