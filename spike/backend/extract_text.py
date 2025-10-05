@@ -1,25 +1,17 @@
 import os
 import glob
+import json
 from bs4 import BeautifulSoup
 
-RAW_DIR = "../data/raw"
-TEXT_DIR = "../data/text"
+RAW_DIR = "raw"
+TEXT_DIR = "extracted_text"
 os.makedirs(TEXT_DIR, exist_ok=True)
 
-# Sections to ignore by title
-IGNORE_SECTIONS = [
-    "Introduction",
-    "Materials",
-    "Methods",
-    "Methodology",
-    "References",
-    "Acknowledgments",
-    "Funding",
-    "General Outcomes",
-    "Author Contributions"
-]
+# Key sections by title (lowercase for consistency)
+KEYWORDS = ["abstract", "discussion", "conclusion"]  
 
 def extract_text_recursive(element, content):
+    """Recursively extract text, skip H4/figure and unwanted classes."""
     # Skip h4 and figure entirely
     if hasattr(element, "name") and element.name in ["h4", "figure"]:
         return
@@ -29,13 +21,13 @@ def extract_text_recursive(element, content):
         if set(element["class"]) & {"tw", "xbox", "font-sm"}:
             return
 
-    # H3 headers
+    # include H3 headers as Markdown-style ###
     if hasattr(element, "name") and element.name == "h3":
         h3_title = element.get_text(strip=True)
         content.append(f"### {h3_title}")
 
-    # Paragraphs, list items, table cells
-    elif hasattr(element, "name") and element.name in ["p", "li", "td", "th"]:
+    # Paragraphs, list items
+    elif hasattr(element, "name") and element.name in ["p", "li"]:
         text = element.get_text(strip=True)
         if text:
             content.append(text)
@@ -52,9 +44,7 @@ def extract_text_recursive(element, content):
             content.append(text)
 
 def extract_section_text(section, stop_tag):
-    """
-    Extract all content under an H2 section until the next H2.
-    """
+    """Extract all content under an H2 section until the next H2."""
     content = []
     for sibling in section.next_siblings:
         if sibling == stop_tag:
@@ -62,45 +52,43 @@ def extract_section_text(section, stop_tag):
         extract_text_recursive(sibling, content)
     return "\n\n".join(content)
 
-def clean_text(html):
+def clean_text_to_dict(html):
+    """Convert HTML to a dictionary: H2 titles as keys, content as values."""
     soup = BeautifulSoup(html, "html.parser")
-    content = []
+    sections_dict = {}
 
-    # Find all H2 sections
     sections = soup.find_all("h2", class_="pmc_sec_title")
     for i, section in enumerate(sections):
         section_title = section.get_text(strip=True)
 
-        # Skip H2 if in ignore list
-        if any(ignore.lower() in section_title.lower() for ignore in IGNORE_SECTIONS):
+        # Keep only sections whose H2 title contains a keyword
+        if not any(keyword in section_title.lower() for keyword in KEYWORDS):
             continue
 
-        # Keep H2 header
-        content.append(f"## {section_title}")
-
-        # Stop tag is next H2
         stop_tag = sections[i+1] if i+1 < len(sections) else None
-
-        # Extract content under this H2
         section_text = extract_section_text(section, stop_tag)
-        if section_text:
-            content.append(section_text)
 
-    return "\n\n".join(content)
+        if section_text:
+            sections_dict[section_title.lower()] = section_text
+
+    return sections_dict
+
 
 def main():
     for path in glob.glob(f"{RAW_DIR}/*.html"):
         with open(path, encoding="utf-8") as f:
             html = f.read()
 
-        text = clean_text(html)
-        fname = os.path.splitext(os.path.basename(path))[0] + ".txt"
+        sections_dict = clean_text_to_dict(html)
+
+        fname = "extracted_temparticle.json"
         outpath = os.path.join(TEXT_DIR, fname)
 
+        # Write the dictionary to a JSON file
         with open(outpath, "w", encoding="utf-8") as f:
-            f.write(text)
+            json.dump(sections_dict, f, indent=4)
 
-        print(f"Extracted structured text from {fname}")
+        print(f"Extracted structured dictionary from {fname}")
 
 if __name__ == "__main__":
     main()
