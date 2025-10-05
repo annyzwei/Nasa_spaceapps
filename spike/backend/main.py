@@ -4,6 +4,7 @@ import json
 import downloader
 import extract_text
 import ai_prompt
+import ai_test
 
 RAW_DIR = "raw"
 TEXT_DIR = "extracted_text"
@@ -34,19 +35,19 @@ def build_summary():
     # Build prompt using sections
     prompt = ai_prompt.build_prompt_from_sections(sections)
 
-    # Call OpenAI API to get summary
-    response = ai_prompt.openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
-    )
+    # Ensure OPENAI_API_KEY is set
+    if not os.getenv("OPENAI_API_KEY"):
+        raise SystemExit("OPENAI_API_KEY is not set. Put it in .env or your shell environment.")
 
-    # Parse text output
-    summary_text = response.choices[0].message.content
+    # Call model via ai_test helper which supports new SDK and fallback
+    raw = ai_test._call_with_fallback(prompt, temperature=0.0)
 
-    # Save raw text JSON (you could optionally parse into dict here)
+    # Parse output using tolerant parser
+    parsed = ai_test._parse_json(raw)
+
+    # Save parsed JSON
     with open(SUMMARY_JSON, "w", encoding="utf-8") as f:
-        f.write(summary_text)
+        json.dump(parsed, f, indent=2, ensure_ascii=False)
 
     print(f"Saved summary JSON to {SUMMARY_JSON}")
 
